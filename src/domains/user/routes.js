@@ -182,8 +182,6 @@ const extractUserId = (req, res, next) => {
 
 // Apply the middleware to the route
 router.get('/getUser', extractUserId, async (req, res) => {
-  console.log('req.userId:', req.userId); // Check if userId is correctly populated
-
   try {
     const userData = await User.findById(req.userId);
     if (!userData) {
