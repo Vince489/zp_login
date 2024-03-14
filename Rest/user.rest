@@ -1,0 +1,92 @@
+###
+// Get all users 
+GET http://localhost:5550/api/v1/user
+
+###
+// Register a new user
+POST http://localhost:5550/api/v1/user/register
+Content-Type: application/json
+
+{
+    "userName": "brit", 
+    "password": "123456"
+}
+
+###
+// Login 
+POST http://localhost:5550/api/v1/user/login
+Content-Type: application/json
+
+{
+    "userName": "brit",
+    "password": "123456"
+}
+
+###
+// Logout 
+GET http://localhost:5550/api/v1/user/logout
+
+###
+// Check if user is logged in 2
+GET http://localhost:5550/api/v1/user/getUser
+
+###
+// Request an airdrop
+POST https://gaming-token-production.up.railway.app/api/v1/user/airdrop
+Content-Type: application/json
+
+###
+// Request an airdrop 2
+POST http://localhost:5550/api/v1/user/airdrop
+Content-Type: application/json
+
+###
+// Transfer tokens
+POST https://gaming-token-production.up.railway.app/api/v1/user/transfer
+Content-Type: application/json
+
+{
+    "to": "65d69146a28defb6c0cf2543",
+    "amount": 4.25
+}
+
+###
+// Transfer tokens 2
+POST http://localhost:5550/api/v1/user/transfer
+Content-Type: application/json
+
+{
+    "to": "65d69146a28defb6c0cf2543",
+    "amount": 4.25
+}
+
+### 
+// View balance by user id
+GET https://gaming-token-production.up.railway.app/api/v1/user/65d6950a04ddc6c2b1d76c9f/balance
+
+### 
+// View balance by user id 2
+GET http://localhost:5550.app/api/v1/user/65d6950a04ddc6c2b1d76c9f/balance
+
+###
+// View user's transactions
+GET https://gaming-token-production.up.railway.app/api/v1/user/transactions/65d6950a04ddc6c2b1d76c9f
+
+###
+// View user's transactions 2
+GET http://localhost:5550/api/v1/user/transactions/65d6950a04ddc6c2b1d76c9f
+
+###
+// Get user by session id
+GET https://gaming-token-production.up.railway.app/api/v1/user/getUser
+
+###
+// Get user by session id 2
+GET http://localhost:5550/api/v1/user/getUser
+
+
+
+
+
+
+
