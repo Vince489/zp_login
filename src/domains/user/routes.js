@@ -95,14 +95,17 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid password' });
     }
 
+    // Update isAuthenticated field to true
+    user.isAuthenticated = true;
+    await user.save();
+
     // Generate JWT token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id, isAuthenticated: user.isAuthenticated }, process.env.JWT_SECRET);
 
     // Set the JWT token as a secure cookie
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: true, // Set to true if your app uses HTTPS
-      maxAge: 3600000, // Token expiration time in milliseconds (1 hour)
       sameSite: 'strict' // Set the sameSite attribute to mitigate CSRF attacks
     });
 

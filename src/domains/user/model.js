@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
       ref: 'Transaction',
     },
   ],
+  isAuthenticated: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
