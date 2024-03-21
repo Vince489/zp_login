@@ -123,11 +123,23 @@ router.post('/login', async (req, res) => {
 });
 
 
-// Subsequent middleware or route handler that requires the token
-router.get('/protected-route', (req, res) => {
+// Verify JWT token
+router.get('/verify', (req, res) => {
   // Access the token from the req object
   const token = req.token;
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
 
+  // Verify the token
+  jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+    if (error) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    // Respond with the decoded token
+    res.status(200).json(decoded);
+  });
 });
 
 // Route to get user data
@@ -163,7 +175,10 @@ router.get('/getUser', extractUserId, async (req, res) => {
   }
 });
 
-
+// Endpoint to verify JWT token and extract user ID
+router.post('/verifyJWT', extractUserId, async (req, res) => {
+  console.log('User ID:', req);
+});
 
 // Logout endpoint
 router.post('/logout', (req, res) => {
