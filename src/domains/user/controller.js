@@ -64,7 +64,7 @@ const authenticateUser = async (data) => {
     // Assign token to user
     user.token = token;
 
-    return { user, token };
+    return { user };
   } catch (error) {
     throw error;
   }

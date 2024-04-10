@@ -85,8 +85,7 @@ router.post('/register',
               password,
             });
 
-            // Save the user to the database
-            await newUser.save();
+            await sendVerificationOTPEmail(email);
 
             // Respond with success message
             res.status(201).json({
@@ -153,13 +152,22 @@ router.post('/login', async (req, res) => {
 
     // Check if email and password are provided
     if (!email || !password) {
-      return res.status(400).json({ message: 'email and password are required' });
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    // Check if email and password are empty
+    if (!trimmedEmail || !trimmedPassword) {
+      throw new Error("Empty credentials supplied!");
     }
 
     // Authenticate user
-    const { user, token } = await authenticateUser({ email, password });
+    const authenticatedUser = await authenticateUser({ email: trimmedEmail, password: trimmedPassword });
 
     // Set the JWT token as a secure cookie
+    const token = authenticatedUser.token; // Access token from authenticatedUser object
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: true, // Set to true if your app uses HTTPS
@@ -169,8 +177,8 @@ router.post('/login', async (req, res) => {
     // Authentication successful
     res.status(200).json({ 
       message: 'Login successful',
-      user: user,
-      token: token, 
+      user: authenticatedUser.user, // Access user object from authenticatedUser
+      tokenz: token, 
     });
   } catch (error) {
     // Handle errors
@@ -178,6 +186,7 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 
 

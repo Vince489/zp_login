@@ -14,23 +14,24 @@ Content-Type: application/json
 
 ###
 // verify email
-POST http://localhost:4400/api/v1/email_verification/verify
+POST http://localhost:5550/api/v1/email_verification/verify
 Content-Type: application/json
 
 {
   "email": "vincentcornelius489@gmail.com",
-  "otp": "4527"
+  "otp": "9728"
 }
 
 ###
 // login
-POST http://localhost:4400/api/v1/user
+POST http://localhost:5550/api/v1/user/login
 Content-Type: application/json
 
 {
   "email": "vincentcornelius489@gmail.com",
   "password": "12345678"
 }
+
 ###
 // login2
 POST http://localhost:4005/login
