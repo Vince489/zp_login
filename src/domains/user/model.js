@@ -6,7 +6,17 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  email: { 
+    type: String, 
+    unique: true,
+    required: true 
+  },
   codeName: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  email: {
     type: String,
     required: true,
     unique: true,
@@ -15,9 +25,16 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  token: {
+    type: String,
+  },
   balance: {
     type: Number,
     default: 0,
+  },
+  verified: { 
+    type: Boolean, 
+    default: false 
   },
   airdropReceived: {
     type: Boolean,

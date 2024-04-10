@@ -2,8 +2,10 @@ require('dotenv').config();
 
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const auth = require("./../../middleware/auth");
+const { createNewUser, authenticateUser } = require("../user/controller");
+const { sendVerificationOTPEmail } = require("./../email_verification/controller");
 const User = require('./model');
 const generateUsername = require('../../utils/names'); 
 const { body, validationResult } = require('express-validator');
@@ -13,22 +15,23 @@ const { body, validationResult } = require('express-validator');
 router.get('/', async (req, res) => {
   try {
     // Fetch all users from the database, excluding password and airdropReceived
-    const users = await User.find({}, { password: 0, airdropReceived: 0, transactions: 0});
+    const users = await User.find();
 
     // Respond with the users
     res.status(200).json(users);
   } catch (error) {
-    // Handle errors
+    // Handle errors 
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
 
 // Signup endpoint
-router.post('/register', 
-    // Validation middleware for userName and password
+router.post('/register',
+    // Validation middleware for userName, email, and password
     [
         body('userName').notEmpty().withMessage('Username is required'),
+        body('email').isEmail().withMessage('Invalid email format'),
         body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
     ],
     async (req, res) => {
@@ -40,69 +43,131 @@ router.post('/register',
             }
 
             // Extract user data from request body
-            const { userName, password } = req.body;
+            let { userName, email, password } = req.body;
+            userName = userName.trim();
+            email = email.trim();
+            password = password.trim();
+
+            // Check for empty input fields
+            if (!(userName && email && password)) {
+                throw new Error("Empty input fields!");
+            }
+
+            // Check for valid userName format
+            if (!/^[a-zA-Z0-9 ]*$/.test(userName)) {
+                throw new Error("Invalid userName entered");
+            }
+
+            // Check for valid email format
+            if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+                throw new Error("Invalid email entered");
+            }
+
+            // Check for password length
+            if (password.length < 6) {
+                throw new Error("Password is too short!");
+            }
 
             // Generate unique codeName
-            const codeName = await generateUsername(); 
+            const codeName = await generateUsername();
 
             // Check if user already exists
-            const existingUser = await User.findOne({ userName });
+            const existingUser = await User.findOne({ $or: [{ userName }, { email }] });
             if (existingUser) {
                 return res.status(400).json({ message: 'User already exists' });
             }
 
-            // Hash the password
-            const hashedPassword = await bcrypt.hash(password, 10);
-
             // Create new user
-            const newUser = new User({
-                userName,
-                codeName,
-                password: hashedPassword
+            const newUser = await createNewUser({
+              userName,
+              codeName,
+              email,
+              password,
             });
 
-            // Save the user to the database
-            await newUser.save();
+            await sendVerificationOTPEmail(email);
 
             // Respond with success message
-            res.status(201).json({ 
+            res.status(201).json({
                 message: 'User created successfully',
                 codeName: newUser.codeName,
             });
         } catch (error) {
             // Handle errors
-            console.error(error);
+            console.error(error.message);
             res.status(500).json({ message: 'Internal server error' });
         }
     }
 );
 
 // Login endpoint
+// router.post('/login', async (req, res) => {
+//   try {
+//     // Extract user data from request body
+//     const { userName, password } = req.body;
+
+//     // Check if user exists
+//     const user = await User.findOne({ userName });
+//     if (!user) {
+//       return res.status(401).json({ message: 'Invalid username or password' });
+//     }
+
+//     // Compare passwords
+//     const passwordMatch = await bcrypt.compare(password, user.password);
+//     if (!passwordMatch) {
+//       return res.status(401).json({ message: 'Invalid username or password' });
+//     }
+
+//     // Update isAuthenticated field to true
+//     user.isAuthenticated = true;
+//     await user.save();
+
+//     // Generate JWT token
+//     const token = jwt.sign({ userId: user._id, isAuthenticated: user.isAuthenticated }, process.env.JWT_SECRET);
+
+//     // Set the JWT token as a secure cookie
+//     res.cookie('jwt', token, {
+//       httpOnly: true,
+//       secure: true, // Set to true if your app uses HTTPS
+//       sameSite: 'strict' // Set the sameSite attribute to mitigate CSRF attacks
+//     });
+
+//     // Authentication successful
+//     res.status(200).json({ 
+//       message: 'Login successful',
+//       user: user,
+//       token: token, 
+//     });
+//   } catch (error) {
+//     // Handle errors
+//     console.error(error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
+
 router.post('/login', async (req, res) => {
   try {
     // Extract user data from request body
-    const { userName, password } = req.body;
+    const { email, password } = req.body;
 
-    // Check if user exists
-    const user = await User.findOne({ userName });
-    if (!user) {
-      return res.status(401).json({ message: 'Invalid username' });
+    // Check if email and password are provided
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    // Compare passwords
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      return res.status(401).json({ message: 'Invalid password' });
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    // Check if email and password are empty
+    if (!trimmedEmail || !trimmedPassword) {
+      throw new Error("Empty credentials supplied!");
     }
 
-    // Update isAuthenticated field to true
-    user.isAuthenticated = true;
-    await user.save();
-
-    // Generate JWT token
-    const token = jwt.sign({ userId: user._id, isAuthenticated: user.isAuthenticated }, process.env.JWT_SECRET);
+    // Authenticate user
+    const authenticatedUser = await authenticateUser({ email: trimmedEmail, password: trimmedPassword });
 
     // Set the JWT token as a secure cookie
+    const token = authenticatedUser.token; // Access token from authenticatedUser object
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: true, // Set to true if your app uses HTTPS
@@ -112,8 +177,8 @@ router.post('/login', async (req, res) => {
     // Authentication successful
     res.status(200).json({ 
       message: 'Login successful',
-      user: user,
-      token: token, 
+      user: authenticatedUser.user, // Access user object from authenticatedUser
+      tokenz: token, 
     });
   } catch (error) {
     // Handle errors
@@ -121,6 +186,8 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
 
 
 // Verify JWT token
