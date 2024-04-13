@@ -8,8 +8,9 @@ POST http://localhost:5550/api/v1/user/register
 Content-Type: application/json
 
 {
-    "userName": "brit", 
-    "password": "12345"
+    "userName": "britz6",
+    "email": "britz6@aol.com",
+    "password": "12345678"
 }
 
 ###
@@ -18,8 +19,8 @@ POST http://localhost:5550/api/v1/user/login
 Content-Type: application/json
 
 {
-    "userName": "brit",
-    "password": "123456"
+    "userName": "britz6",
+    "password": "12345678"
 }
 
 ###
