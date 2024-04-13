@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
 });
 
 // Signup endpoint
-router.post('/register',
+router.post('/signup',
     // Validation middleware for userName, email, and password
     [
         body('userName').notEmpty().withMessage('Username is required'),
@@ -170,7 +170,7 @@ router.post('/login', async (req, res) => {
     const token = authenticatedUser.token; // Access token from authenticatedUser object
     res.cookie('jwt', token, {
       httpOnly: true,
-      secure: true, // Set to true if your app uses HTTPS
+      secure: false, // Set to true if your app uses HTTPS
       sameSite: 'strict' // Set the sameSite attribute to mitigate CSRF attacks
     });
 
