@@ -166,6 +166,18 @@ router.post('/login', async (req, res) => {
     // Authenticate user
     const authenticatedUser = await authenticateUser({ email: trimmedEmail, password: trimmedPassword });
 
+    if (!authenticatedUser) {
+      // If authentication fails, check if the email exists in the database
+      const userWithEmail = await User.findOne({ email: trimmedEmail });
+      if (!userWithEmail) {
+        // If the email doesn't exist, return an error message
+        return res.status(401).json({ message: 'Invalid email' });
+      } else {
+        // If the email exists but the password is incorrect, return a different error message
+        return res.status(401).json({ message: 'Incorrect password' });
+      }
+    }
+
     // Set the JWT token as a secure cookie
     const token = authenticatedUser.token; // Access token from authenticatedUser object
     res.cookie('jwt', token, {
@@ -186,6 +198,7 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 
 
