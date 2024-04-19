@@ -4,13 +4,23 @@ GET http://localhost:5550/api/v1/user
 
 ###
 // Register a new user
-POST http://localhost:5550/api/v1/user/register
+POST http://localhost:5550/api/v1/user/signup
 Content-Type: application/json
 
 {
-    "userName": "britz6",
-    "email": "britz6@aol.com",
+    "userName": "OffgridVince",
+    "email": "vincentcornelius489@gmail.com",
     "password": "12345678"
+}
+
+###
+//Verify gamer email
+POST http://localhost:5550/api/v1/email_verification/verify
+Content-Type: application/json
+
+{
+    "email": "vincentcornelius489@gmail.com",
+    "otp": "4555"
 }
 
 ###
@@ -19,7 +29,7 @@ POST http://localhost:5550/api/v1/user/login
 Content-Type: application/json
 
 {
-    "userName": "britz6",
+    "email": "vincentcornelius489@gmail.com",
     "password": "12345678"
 }
 

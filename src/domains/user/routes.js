@@ -100,51 +100,6 @@ router.post('/signup',
     }
 );
 
-// Login endpoint
-// router.post('/login', async (req, res) => {
-//   try {
-//     // Extract user data from request body
-//     const { userName, password } = req.body;
-
-//     // Check if user exists
-//     const user = await User.findOne({ userName });
-//     if (!user) {
-//       return res.status(401).json({ message: 'Invalid username or password' });
-//     }
-
-//     // Compare passwords
-//     const passwordMatch = await bcrypt.compare(password, user.password);
-//     if (!passwordMatch) {
-//       return res.status(401).json({ message: 'Invalid username or password' });
-//     }
-
-//     // Update isAuthenticated field to true
-//     user.isAuthenticated = true;
-//     await user.save();
-
-//     // Generate JWT token
-//     const token = jwt.sign({ userId: user._id, isAuthenticated: user.isAuthenticated }, process.env.JWT_SECRET);
-
-//     // Set the JWT token as a secure cookie
-//     res.cookie('jwt', token, {
-//       httpOnly: true,
-//       secure: true, // Set to true if your app uses HTTPS
-//       sameSite: 'strict' // Set the sameSite attribute to mitigate CSRF attacks
-//     });
-
-//     // Authentication successful
-//     res.status(200).json({ 
-//       message: 'Login successful',
-//       user: user,
-//       token: token, 
-//     });
-//   } catch (error) {
-//     // Handle errors
-//     console.error(error);
-//     res.status(500).json({ message: 'Internal server error' });
-//   }
-// });
-
 router.post('/login', async (req, res) => {
   try {
     // Extract user data from request body
@@ -183,7 +138,9 @@ router.post('/login', async (req, res) => {
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: false, // Set to true if your app uses HTTPS
-      sameSite: 'strict' // Set the sameSite attribute to mitigate CSRF attacks
+      sameSite: 'strict', // Set the sameSite attribute to mitigate CSRF attacks
+      secure: process.env.NODE_ENV === 'production', // Set to true in production, false in development
+      path: '/',
     });
 
     // Authentication successful
@@ -198,10 +155,6 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
-
-
-
-
 
 // Verify JWT token
 router.get('/verify', (req, res) => {
@@ -264,7 +217,11 @@ router.post('/verifyJWT', extractUserId, async (req, res) => {
 router.post('/logout', (req, res) => {
   try {
     // Clear the JWT cookie by setting it to an empty value with an expired date
-    res.clearCookie('jwt', { path: '/' }); // Replace 'jwt' with your cookie name
+    res.clearCookie('jwt', {
+      httpOnly: true,
+      secure: process.env.TOKEN_KEY === 'production', 
+      path: '/' 
+    }); // Replace 'jwt' with your cookie name
     
     // Send a response indicating successful logout
     res.status(200).json({ message: 'Logout successful' });
