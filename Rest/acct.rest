@@ -1,0 +1,7 @@
+// Get all accounts
+GET http://localhost:5400/api/v1/account
+
+###
+// Create new acct
+POST http://localhost:5400/api/v1/account
+Content-Type: application/json

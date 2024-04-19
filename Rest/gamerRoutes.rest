@@ -1,0 +1,73 @@
+// Get all gamers
+GET http://localhost:3400/api/v1/gamer
+
+###
+// Sign-up
+POST http://localhost:3400/api/v1/gamer/signup
+Content-Type: application/json
+
+{
+  "gamerTag": "Vince",
+  "email": "vincentcornelius489@gmail.com",
+  "password": "12345678"
+}
+
+###
+//Verify gamer email
+
+###
+// Login
+POST http://localhost:3400/api/v1/gamer
+Content-Type: application/json
+
+{
+  "gamerTag": "Vince",
+  "password": "12345678"
+}
+
+###
+// Logout
+POST http://localhost:5400/api/v1/gamer/logout
+Content-Type: application/json
+
+
+###
+// Create new acct
+POST http://localhost:5400/api/v1/account/2
+Content-Type: application/json
+
+
+###
+// Create a token
+POST http://localhost:5400/api/v1/token/
+Content-Type: application/json
+
+{
+  "uri": "https://defi.com",
+  "symbol": "bbb",
+  "name": "bbb"
+}
+
+
+###
+// Mint token
+POST http://localhost:5400/api/v1/token/mint4
+Content-Type: application/json
+
+{
+  "mintAmount": 250000
+}
+
+
+###
+// Initialize the blockchain
+POST http://localhost:5400/api/v1/blockchain/create
+Content-Type: application/json
+
+###
+// Initialize VRT
+POST http://localhost:5400/api/v1/vrt
+Content-Type: application/json
+
+
+

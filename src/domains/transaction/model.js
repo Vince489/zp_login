@@ -1,27 +1,63 @@
+// transaction.js
 const mongoose = require('mongoose');
 
 const transactionSchema = new mongoose.Schema({
   sender: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Account',
+    },
+    publicKey: {
+      type: String,
+      required: true,
+    },
+    beginningBalance: {
+      type: Number,
+    },
+    endingBalance: {
+      type: Number,
+    },
   },
   recipient: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Account',
+    },
+    publicKey: {
+      type: String,
+      required: true,
+    },
+    beginningBalance: {
+      type: Number,
+    },
+    endingBalance: {
+      type: Number,
+    },
+  },
+  type: {
+    type: String,
+    enum: ['transfer', 'stake', 'airdrop', 'create_account', 'create_token', 'mint_token', 'burn_token'],
     required: true,
   },
   amount: {
     type: Number,
     required: true,
   },
-  type: {
+  signature: {
     type: String,
-    enum: ['transfer', 'airdrop'],
-    default: 'transfer',
-  },
-  date: {
+    required: true,
+  },    
+  timestamp: {
     type: Date,
-    default: Date.now,
+    default: new Date().toISOString(),
+  },
+  confirmations: {
+    type: Number,
+    default: 0,
+  },
+  complete: {
+    type: Boolean,
+    default: false,
   },
 });
 

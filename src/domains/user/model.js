@@ -6,20 +6,28 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  gamerTags: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'GamerTag',
+  }],
   email: { 
     type: String, 
-    unique: true,
-    required: true 
+    required: true,
+    unique: true 
+  },
+  image: {
+    type: String,
+    default: 'https://default.png',
   },
   codeName: {
     type: String,
     required: true,
-    unique: true,
+    unique: true
   },
   email: {
     type: String,
     required: true,
-    unique: true,
+    unique: true
   },
   password: {
     type: String,
@@ -28,24 +36,46 @@ const userSchema = new mongoose.Schema({
   token: {
     type: String,
   },
-  balance: {
-    type: Number,
-    default: 0,
-  },
   verified: { 
     type: Boolean, 
     default: false 
   },
-  airdropReceived: {
-    type: Boolean,
-    default: false,
+  friends: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Gamer',
+  }],
+  messages: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Message',
+  }],
+  account: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Account',
+    default: null,
   },
-  transactions: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Transaction',
+  badges: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Badge',
+  }],
+  socialMedia: {
+    facebook: {
+      type: String,
     },
-  ],
+    instagram: {
+      type: String,
+    },
+    twitch: {
+      type: String,
+    },
+    youtube: {
+      type: String,
+    },
+  },
+  roles: {
+    type: [String], // Store roles as an array of strings
+    enum: ['gamer', 'promoter', 'trainer', 'admin'], 
+    default: ['gamer']
+  },
   isAuthenticated: {
     type: Boolean,
     default: false,

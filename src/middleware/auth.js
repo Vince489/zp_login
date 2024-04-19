@@ -4,7 +4,7 @@ const { TOKEN_KEY } = process.env;
 
 const verifyToken = async (req, res, next) => {
   const token =
-    req.body.token || req.query.token || req.headers["x-access-token"];
+    req.body.token || req.cookies.token || req.query.token || req.headers["x-access-token"];
 
   // check for provided token
   if (!token) {
