@@ -1,4 +1,4 @@
-const Gamer = require('../domains/gamer/model');
+const User = require('../domains/user/model');
 const Account = require('../domains/account/model');
 
 const associateAccountWithGamer = async (accountId, gamerId) => {
