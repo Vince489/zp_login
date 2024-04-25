@@ -13,7 +13,7 @@ const verifyToken = require('../../middleware/auth');
 
 
 // Get all users endpoint
-router.get('/', verifyToken, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const users = await User.find();
 

@@ -1,4 +1,4 @@
-require("./config/db");
+const connectToDB = require("./config/db"); // Require the db.js file
 
 const express = require("express");
 const cookieParser = require('cookie-parser');
@@ -21,5 +21,7 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use("/api/v1", routes);
 
+// Connect to the database
+connectToDB();
 
 module.exports = app;
