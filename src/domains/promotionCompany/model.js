@@ -4,7 +4,7 @@ const promotionCompanySchema = new mongoose.Schema({
   // Owner of the promotion company
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Gamer',
+    ref: 'User',
   },
 
   // Name of the promotion company
@@ -16,13 +16,19 @@ const promotionCompanySchema = new mongoose.Schema({
   // Promoters associated with the promotion company
   promoters: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Gamer',
+    ref: 'GamerTag',
+  }],
+
+  // Contracts
+  contracts: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Contract'
   }],
 
   // Matchmakers associated with the promotion company
   matchMakers: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'MatchMaker',
+    ref: 'Gamertag',
   }],
 
   // Events organized by the promotion company
@@ -49,8 +55,8 @@ const promotionCompanySchema = new mongoose.Schema({
     required: true,
   },
 
-  // Virtual balance (VRT) associated with the promotion company
-  vrtBalance: {
+  // Virtual account (VRT) associated with the promotion company
+  vrtAccount: {
     type: Number,
     default: 0,
   },

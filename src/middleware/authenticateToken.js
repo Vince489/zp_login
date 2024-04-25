@@ -10,13 +10,13 @@ const authenticateToken = (req, res, next) => {
     return res.status(401).json({ message: 'Unauthorized: Missing token' });
   }
 
-  jwt.verify(token, TOKEN_KEY, (err, gamer) => {
+  jwt.verify(token, TOKEN_KEY, (err, user) => {
     if (err) {
       return res.status(403).json({ message: 'Forbidden: Invalid token' });
     }
 
     // Attach the authenticated user to the request for later use    
-    req.gamer = gamer;
+    req.user = user;
     next();
   });
 }; 

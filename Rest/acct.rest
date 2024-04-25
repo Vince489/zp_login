@@ -1,7 +1,25 @@
 // Get all accounts
-GET http://localhost:5400/api/v1/account
+GET http://localhost:5550/api/v1/account
 
 ###
 // Create new acct
-POST http://localhost:5400/api/v1/account
+POST http://localhost:5550/api/v1/account
 Content-Type: application/json
+
+###
+// Login  
+POST http://localhost:5550/api/v1/user/login
+Content-Type: application/json
+
+{
+    "email": "vincentcornelius489@gmail.com",
+    "password": "12345678"
+}
+
+###
+// vrt account 
+POST http://localhost:5550/api/v1/vrtAccount
+Content-Type: application/json
+
+
+

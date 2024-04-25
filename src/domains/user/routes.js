@@ -3,18 +3,18 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const auth = require("./../../middleware/auth");
 const { createNewUser, authenticateUser } = require("../user/controller");
 const { sendVerificationOTPEmail } = require("./../email_verification/controller");
 const User = require('./model');
 const generateUsername = require('../../utils/names'); 
 const { body, validationResult } = require('express-validator');
+const e = require('express');
+const verifyToken = require('../../middleware/auth');
 
 
 // Get all users endpoint
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
   try {
-    // Fetch all users from the database, excluding password and airdropReceived
     const users = await User.find();
 
     // Respond with the users
@@ -135,8 +135,9 @@ router.post('/login', async (req, res) => {
 
     // Set the JWT token as a secure cookie
     const token = authenticatedUser.token; // Access token from authenticatedUser object
+
     res.cookie('jwt', token, {
-      httpOnly: true,
+      // httpOnly: true,
       secure: false, // Set to true if your app uses HTTPS
       sameSite: 'strict', // Set the sameSite attribute to mitigate CSRF attacks
       secure: process.env.NODE_ENV === 'production', // Set to true in production, false in development
@@ -147,7 +148,6 @@ router.post('/login', async (req, res) => {
     res.status(200).json({ 
       message: 'Login successful',
       user: authenticatedUser.user, // Access user object from authenticatedUser
-      tokenz: token, 
     });
   } catch (error) {
     // Handle errors
@@ -158,16 +158,17 @@ router.post('/login', async (req, res) => {
 
 // Verify JWT token
 router.get('/verify', (req, res) => {
-  // Access the token from the req object
-  const token = req.token;
+  // Access the token from browser cookies
+  const token = req.cookies.jwt;
+  console.log(token);
   if (!token) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    return res.status(401).json({ message: 'Missing' });
   }
 
   // Verify the token
-  jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+  jwt.verify(token, process.env.TOKEN_KEY, (error, decoded) => {
     if (error) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return res.status(401).json({ message: error.message });
     }
 
     // Respond with the decoded token

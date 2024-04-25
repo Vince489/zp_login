@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    default: 'https://default.png',
+    default: 'https://raw.githubusercontent.com/Vince489/BNV_Image/main/boxing-gloves.png',
   },
   codeName: {
     type: String,
@@ -73,8 +73,8 @@ const userSchema = new mongoose.Schema({
   },
   roles: {
     type: [String], // Store roles as an array of strings
-    enum: ['gamer', 'promoter', 'trainer', 'admin'], 
-    default: ['gamer']
+    enum: ['user', 'gamer', 'fighter', 'trainer', 'manager', 'promoter', 'trainer', 'admin'], 
+    default: ['user']
   },
   isAuthenticated: {
     type: Boolean,

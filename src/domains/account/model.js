@@ -19,7 +19,7 @@ const accountSchema = new mongoose.Schema({
   },
   vrtAccount: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'NativeCoinAccount',
+    ref: 'vrtAccount',
   },
   tokenAccounts: [{
     type: mongoose.Schema.Types.ObjectId,

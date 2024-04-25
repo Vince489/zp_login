@@ -5,9 +5,6 @@ const boutSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Fighter',
   },
-  nonLeagueOpponent: {
-    type: String
-  },
   result: {
     type: String,
     required: true
@@ -20,6 +17,21 @@ const boutSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  knockdowns: {
+    type: Number
+  },
+  opponentOVR: {
+    type: Number
+  },
+  fighterOVR: {
+    type: Number
+  },
+  oppWgt: {
+    type: Number
+  },
+  fighterWgt: {
+    type: Number
+  },
   date: {
     type: Date,
   },
@@ -29,6 +41,12 @@ const boutSchema = new mongoose.Schema({
   purse: {
     type: Number
   },
+  scoreCards: {
+    type: String
+  },
+  punchStats: {
+    type: String
+  }
 });
 
 const Bout = mongoose.model('Bout', boutSchema);

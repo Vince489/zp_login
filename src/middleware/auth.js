@@ -1,26 +1,29 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
-const { TOKEN_KEY } = process.env;
+const verifyToken = (req, res, next) => {
+  // Get JWT token from cookie
+  const token = req.cookies.jwt;
 
-const verifyToken = async (req, res, next) => {
-  const token =
-    req.body.token || req.cookies.token || req.query.token || req.headers["x-access-token"];
-
-  // check for provided token
+  // Check if token exists
   if (!token) {
-    return res.status(403).send("An authentication token is required");
+    return res.status(401).json({ message: 'Unauthorized: No token provided' });
   }
 
-  // verify token
   try {
-    const decodedToken = await jwt.verify(token, TOKEN_KEY);
-    req.currentUser = decodedToken;
-  } catch (error) {
-    return res.status(401).send("Invalid Token provided");
-  }
+    // Verify JWT token
+    const decoded = jwt.verify(token, process.env.TOKEN_KEY);
 
-  // proceed with request
-  return next();
+    // Attach decoded user ID to req.user._id
+    req.user = {
+      _id: decoded.userId
+    };
+
+    // Proceed to next middleware or route handler
+    next();
+  } catch (error) {
+    // Token verification failed
+    return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+  }
 };
 
 module.exports = verifyToken;

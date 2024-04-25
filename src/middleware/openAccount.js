@@ -1,12 +1,10 @@
 const User = require('../domains/user/model');
 const Account = require('../domains/account/model');
 
-const associateAccountWithGamer = async (accountId, gamerId) => {
+const associateAccountWithUser = async (accountId, userId) => {
   try {
     // Update the gamer's document to associate the account
-    const updatedGamer = await Gamer.findByIdAndUpdate(gamerId, { account: accountId }, { new: true });
-
-    // console.log("updatedGamer:", updatedGamer);
+    const updatedGamer = await User.findByIdAndUpdate(userId, { account: accountId }, { new: true });
 
     if (!updatedGamer) {
       throw new Error("Gamer not found or failed to update.");
@@ -58,8 +56,4 @@ const associateVrtAccount = async (accountId, vrtAccountId) => {
 
 
 
-
-
-
-
-module.exports = {associateAccountWithGamer, associateTokenAccount, associateVrtAccount};
+module.exports = {associateAccountWithUser, associateTokenAccount, associateVrtAccount};

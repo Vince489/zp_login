@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const vrtAccountSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Gamer', 
+    ref: 'User', 
     required: true,
   },
   coin: {

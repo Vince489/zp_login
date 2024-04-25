@@ -10,12 +10,12 @@ const VRTAccount = require("./../vrtAccount/model");
 const VRT = require("./../vrt/model");
 const TokenAccount = require("./../tokenAccount/model");
 const Transaction = require("./../transaction/model");
-const {associateAccountWithGamer, associateVrtAccount, associateTokenAccount} = require('../../middleware/openAccount');
 const authenticateToken = require('../../middleware/authenticateToken');
+const User = require("../user/model");
+const verifyToken = require("../../middleware/auth");
+const { associateAccountWithUser } = require("../../middleware/openAccount");
 
-
-
-// get all accounts
+// get all accounts 
 router.get("/", async (req, res, next) => {
   try {
     const accounts = await Account.find().select("publicKey tokenAccounts transactions vrtBalance");
@@ -26,15 +26,13 @@ router.get("/", async (req, res, next) => {
 });
 
 
-// Create a new account associated with logged-in gamer
-router.post('/', authenticateToken, async (req, res, next) => {
+// Create a new account associated with logged-in user
+router.post('/', verifyToken, async (req, res, next) => {
   try {
-    // Check if the gamer already has an associated account
-    if (req.gamer.gamer.gamer.account) {
-      return res.status(400).json({ message: 'Gamer already has an associated account' });
+    // Check if the user already has an associated account
+    if (req.user.account) {
+      return res.status(400).json({ message: 'user already has an associated account' });
     }
-
-    console.log("req.gamer.gamer.gamer._id:", req.gamer.gamer.gamer._id);
 
     // Generate a new key pair and seed phrase
     const keypair = Keypair.generate();
@@ -61,8 +59,8 @@ router.post('/', authenticateToken, async (req, res, next) => {
     // Retrieve the seed phrase document from the database using its ID
     const retrievedSeedPhrase = await SeedPhrase.findById(newSeedPhrase._id);
 
-    // Associate the account with the gamer using the middleware
-    await associateAccountWithGamer(newAccount._id, req.gamer.gamer.gamer._id); 
+    // Associate the account with the user using the middleware
+    await associateAccountWithUser(newAccount._id, req.user._id); 
 
 
     // Respond with the newly created account data and the seed phrase
@@ -78,7 +76,7 @@ router.post('/', authenticateToken, async (req, res, next) => {
 
 //yup
 router.post('/2', authenticateToken, async (req, res, next) => {
-  const gamerId = req.gamer.gamer.gamer._id;
+  const userId = req.gamer.gamer.gamer._id;
   try {
     // Check if the gamer already has an associated account
     if (req.gamer.gamer.gamer.account) {
@@ -113,7 +111,7 @@ router.post('/2', authenticateToken, async (req, res, next) => {
     const retrievedSeedPhrase = await SeedPhrase.findById(newSeedPhrase._id);    
 
     // Associate the account with the gamer using the middleware
-    // await associateAccountWithGamer(newAccount._id, gamerId);    
+    // await associateAccountWithUser(newAccount._id, gamerId);    
 
     // Retrieve the native coin token (replace 'NativeCoin' with your actual token name)
     const nativeCoin = await VRT.findOne({ symbol: 'VRT' });
@@ -147,6 +145,60 @@ router.post('/2', authenticateToken, async (req, res, next) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+router.post('/vrt', verifyToken, async (req, res, next) => {
+  try {
+    // Check if the user already has an associated account
+    if (req.user.account) {
+      return res.status(400).json({ message: 'User already has an associated account' });
+    }
+
+    // Generate a new key pair and seed phrase
+    const keypair = Keypair.generate();
+    const seedPhrase = Mnemonic.generate();
+
+    // Create a new seed phrase document
+    const newSeedPhrase = new SeedPhrase({
+      seedPhrase: seedPhrase.seedPhrase,
+    });
+
+    // Save the new seed phrase to the database
+    await newSeedPhrase.save();
+
+    // Create a new account associated with the seed phrase
+    const newAccount = new Account({
+      seedPhrase: newSeedPhrase._id, // Reference the saved seed phrase document
+      publicKey: keypair.publicKey,
+      privateKey: keypair.privateKey,
+    }); 
+
+    // Save the new account to the database
+    await newAccount.save();
+
+    // Create a new VRT account associated with the user's account
+    const newVRTAccount = new VRTAccount({
+      owner: req.user._id, // Reference the user's ID
+      coin: 'VRT', // Assuming 'VRT' is the ID of the VRT coin document in your database
+      publicKey: keypair.publicKey, // Using the same public key for VRT account
+    });
+
+    // Save the new VRT account to the database
+    await newVRTAccount.save();
+
+    // Associate the VRT account with the user's account
+    await associateVrtAccount(newAccount._id, newVRTAccount._id);
+
+    // Respond with the newly created account data and the seed phrase
+    res.status(201).json({
+      account: newAccount,
+      vrtAccount: newVRTAccount,
+      seedPhrase: seedPhrase.seedPhrase,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 
 // Add account to user
 router.post("/add-account", async (req, res, next) => {

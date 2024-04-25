@@ -1,6 +1,7 @@
 require("./config/db");
 
 const express = require("express");
+const cookieParser = require('cookie-parser');
 const routes = require("./routes");
 const cors = require("cors");
 
@@ -16,6 +17,7 @@ const corsOptions = {
 };
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use("/api/v1", routes);
 

@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
 
 const promoterSchema = new mongoose.Schema({
-  gamerId: {
+  gamerTag: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Gamer',
+    ref: 'GamerTag',
     required: true,
   },
-
   // Promoter details
   name: {
     type: String,
@@ -18,13 +17,11 @@ const promoterSchema = new mongoose.Schema({
   image: {
     type: String,
   },
-
   // Fighters managed by the promoter
-  managedFighters: [{
+  promotedFighters: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Fighter',
   }],
-
   // Contact information
   contact: {
     email: {
@@ -35,19 +32,6 @@ const promoterSchema = new mongoose.Schema({
       type: String,
     },
   },
-
-  // Promoter's virtual balance (VRT)
-  vrtBalance: {
-    type: Number,
-    default: 1000,
-  },
-
-  // URL or path to the promoter's logo
-  logo: {
-    type: String,
-    required: true,
-  },
-
   // Badges associated with the promoter
   badges: [{
     type: mongoose.Schema.Types.ObjectId,

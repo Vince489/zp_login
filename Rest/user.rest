@@ -8,8 +8,8 @@ POST http://localhost:5550/api/v1/user/signup
 Content-Type: application/json
 
 {
-    "userName": "OffgridVince",
-    "email": "vincentcornelius489@gmail.com",
+    "userName": "blacksuperman",
+    "email": "touchingheartscards.store@gmail.com",
     "password": "12345678"
 }
 
@@ -20,7 +20,7 @@ Content-Type: application/json
 
 {
     "email": "vincentcornelius489@gmail.com",
-    "otp": "4555"
+    "otp": "8135"
 }
 
 ###
@@ -29,7 +29,7 @@ POST http://localhost:5550/api/v1/user/login
 Content-Type: application/json
 
 {
-    "email": "vincentcornelius489@gmail.com",
+    "email": "touchingheartscards.store@gmail.com",
     "password": "12345678"
 }
 
@@ -40,7 +40,7 @@ GET http://localhost:5550/api/v1/user/verify
 
 ###
 // Logout 
-GET http://localhost:5550/api/v1/user/logout
+POST http://localhost:5550/api/v1/user/logout
 
 ###
 // Check if user is logged in 2
@@ -53,8 +53,13 @@ Content-Type: application/json
 
 ###
 // Request an airdrop 2
-POST http://localhost:5550/api/v1/user/airdrop
+POST http://localhost:5550/api/v1/vrt/airdrop
 Content-Type: application/json
+
+{
+    "publicKey": "38mGLy2Hh96rPXuoWz27fTVk75Bks5zaEERqbDPjc7iA",
+    "amount": 100
+}
 
 ###
 // Transfer tokens

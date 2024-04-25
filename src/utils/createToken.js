@@ -4,17 +4,10 @@ const { TOKEN_KEY, TOKEN_EXPIRY } = process.env;
 
 const createToken = async (
   tokenData,
-  tokenKey = TOKEN_KEY,
-  expiresIn = TOKEN_EXPIRY
+  tokenKey = TOKEN_KEY || "defaultTokenKey",
+  // expiresIn = TOKEN_EXPIRY || "1h"
 ) => {
-  try {
-    const token = await jwt.sign(tokenData, tokenKey, {
-      expiresIn,
-    });
-    return token;
-  } catch (error) {
-    throw error;
-  }
+  return jwt.sign(tokenData, tokenKey);
 };
 
 module.exports = createToken;
